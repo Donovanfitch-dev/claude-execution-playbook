@@ -1,0 +1,18 @@
+{
+  // Lint every Markdown file except generated release assets.
+  "globs": ["**/*.md"],
+  "ignores": ["node_modules", "dist/release"],
+  "config": {
+    "default": true,
+    // Lines are wrapped at about 100 characters by hand; tables and links run longer.
+    "MD013": false,
+    // The single-file edition repeats section names such as "Notes" under different parents.
+    "MD024": { "siblings_only": true },
+    // The single-file edition joins documents with horizontal rules.
+    "MD035": { "style": "---" },
+    // Mermaid node labels use <br/>.
+    "MD033": { "allowed_elements": ["br"] },
+    // The skill file starts with YAML front matter, then a heading.
+    "MD041": true
+  }
+}

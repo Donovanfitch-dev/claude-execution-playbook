@@ -1,0 +1,127 @@
+# Model and platform data (volatile)
+
+**Verified: 2026-11-10**, by reading the linked Anthropic pages on that date.
+
+This is the only file in the playbook that names model versions, IDs, prices and product limits.
+Everything here is a snapshot of vendor documentation, not policy, and it will go out of date.
+Before a decision depends on a fact below, check the source page, and then check that your own
+environment actually offers what the page describes.
+
+## Tier mapping
+
+The chapters use four tier names. On the verification date they map to the current lineup like
+this. The "vendor description" column quotes Anthropic's
+[models overview](https://platform.claude.com/docs/en/about-claude/models/overview).
+
+| Tier | Model | Claude API ID | Vendor description |
+| --- | --- | --- | --- |
+| Light | Claude Haiku 5.5 | `claude-haiku-5-5` | "For high-volume, latency-sensitive tasks such as classification, extraction, and routing" |
+| Everyday | Claude Sonnet 5.5 | `claude-sonnet-5-5` | "The best combination of speed and intelligence" |
+| Advanced | Claude Opus 5.5 | `claude-opus-5-5` | "For long-running agentic coding and knowledge work" |
+| Maximum | Claude Fable 5.2 | `claude-fable-5-2` | "For demanding reasoning and long-horizon agentic work" |
+
+The tier names and the mapping are this playbook's. Anthropic does not use them.
+
+The same page gives the vendor's starting point: "If you're unsure which model to use, start with
+Claude Opus 5.5 for most workloads. Use Claude Fable 5.2 for demanding reasoning and
+long-horizon agentic work, or when your evals on Claude Opus 5.5 at higher effort still fall
+short."
+
+Other cloud platforms use their own identifiers for the same models; the models overview lists
+them. Claude Mythos 5.2 is documented as offering the same capabilities as Claude Fable 5.2 to
+verified organizations only and is not part of the tier mapping.
+
+## Limits and effort
+
+Source: [models overview](https://platform.claude.com/docs/en/about-claude/models/overview),
+[effort](https://platform.claude.com/docs/en/build-with-claude/effort),
+[Claude Code model configuration](https://code.claude.com/docs/en/model-config).
+
+| Model | Context window | Max output | Effort levels | Default effort, Claude API | Default effort, Claude Code |
+| --- | --- | --- | --- | --- | --- |
+| Claude Haiku 5.5 | 1M tokens | 128K tokens | `low` to `max` | `medium` | `medium` |
+| Claude Sonnet 5.5 | 1M tokens | 128K tokens | `low` to `max` | `high` | `medium` |
+| Claude Opus 5.5 | 1M tokens | 128K tokens | `low` to `max` | `medium` | `medium` |
+| Claude Fable 5.2 | 1M tokens | 128K tokens | `low` to `max` | `high` | `medium` |
+
+`low` to `max` means all five levels: `low`, `medium`, `high`, `xhigh`, `max`.
+
+Two things to notice, because they are the reason the playbook says to set effort explicitly:
+
+- The API default is not the same for every model.
+- For two of the four models, the Claude Code default differs from the API default.
+
+The effort page also notes that one current model's levels were recalibrated from its
+predecessor's, and that another's default sits one level lower than its predecessor's. A setting
+carried over from an earlier model does not necessarily mean the same thing.
+
+## Prices
+
+Source: [pricing](https://platform.claude.com/docs/en/about-claude/pricing). US dollars per
+million tokens, Anthropic first-party API, base rates.
+
+| Model | Input | Output | Batch input | Batch output |
+| --- | --- | --- | --- | --- |
+| Claude Haiku 5.5, prompts up to 100,000 tokens | $0.10 | $0.50 | $0.05 | $0.25 |
+| Claude Haiku 5.5, prompts over 100,000 tokens | $0.50 | $2.50 | $0.25 | $1.25 |
+| Claude Sonnet 5.5 | $2 | $10 | $1 | $5 |
+| Claude Opus 5.5 | $4 | $20 | $2 | $10 |
+| Claude Fable 5.2 | $8 | $40 | $4 | $20 |
+
+Prompt caching, long-context and partner-platform rates are on the pricing page and are not
+reproduced here. Prices are one input to cost. The cost that matters is per finished task.
+
+## Fast mode
+
+Source: [fast mode](https://platform.claude.com/docs/en/build-with-claude/fast-mode).
+
+The page describes fast mode as up to 2.5x higher output tokens per second at premium pricing,
+available on Claude Fable 5.2 and Claude Opus 5.5 and in research preview on some earlier models.
+It is not available with the Batch API.
+
+| Model | Fast input | Fast output |
+| --- | --- | --- |
+| Claude Opus 5.5 | $8 | $40 |
+| Claude Fable 5.2 | $16 | $80 |
+
+Platform availability differs by model; check the page before relying on it.
+
+## Lifecycle
+
+Source: [model deprecations](https://platform.claude.com/docs/en/about-claude/model-deprecations).
+All four models are listed as Active. The dates are stated as "not sooner than", which is a
+floor, not a schedule.
+
+| Model | Retirement not sooner than |
+| --- | --- |
+| Claude Haiku 5.5 | October 7, 2027 |
+| Claude Sonnet 5.5 | September 28, 2027 |
+| Claude Opus 5.5 | September 22, 2027 |
+| Claude Fable 5.2 | November 9, 2027 |
+
+## Claude Code facts used in the chapters
+
+| Fact | Source |
+| --- | --- |
+| The `default` model setting resolves to Opus 5.5 on Pro, Max, Ultra, Team, Enterprise and Anthropic API accounts | [model configuration](https://code.claude.com/docs/en/model-config) |
+| Model aliases include `sonnet`, `opus`, `haiku` and `fable` | [model configuration](https://code.claude.com/docs/en/model-config) |
+| A subagent definition can set `model`, `effort` and `isolation: worktree` | [subagents](https://code.claude.com/docs/en/sub-agents) |
+| Subagents can nest up to three layers below the main conversation by default | [subagents](https://code.claude.com/docs/en/sub-agents) |
+| Spawning fails while 20 subagents are running in a session, by default; sessions with ultracode on are exempt | [subagents](https://code.claude.com/docs/en/sub-agents) |
+| A workflow runs up to 16 concurrent agents by default and 1,000 agents in total per run | [workflows](https://code.claude.com/docs/en/workflows) |
+| The default workflow size guideline is `medium`, fewer than 10 agents (`small`, fewer than 5, on a Pro plan), and is advice to the model, not a cap | [workflows](https://code.claude.com/docs/en/workflows) |
+| Ultracode turns on workflow orchestration for the session at the session's effort level; `claude --effort ultracode` also sets the level to `xhigh` | [workflows](https://code.claude.com/docs/en/workflows), [model configuration](https://code.claude.com/docs/en/model-config) |
+| `claude --worktree <name>` creates `.claude/worktrees/<name>/` on branch `worktree-<name>` | [worktrees](https://code.claude.com/docs/en/worktrees) |
+| Personal skills live in `~/.claude/skills/<name>/SKILL.md`; project skills in `.claude/skills/<name>/SKILL.md` | [skills](https://code.claude.com/docs/en/skills) |
+
+Several of these carry minimum client versions in the documentation. If a command behaves
+differently for you, check your version against the page.
+
+## Re-verifying this file
+
+1. Open each source page above and compare it with the tables.
+2. In your own environment, confirm the model and effort you plan to use, with the commands in
+   the [model selection guide](01-model-selection.md#verify-before-you-depend-on-it).
+3. Update the tables, the tier mapping and the **Verified** date at the top together.
+4. Run `python3 scripts/check.py`. It fails if a versioned model name, model ID or price appears
+   in any stable chapter or template, and warns when the verified date is more than 90 days old.
